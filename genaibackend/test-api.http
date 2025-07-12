@@ -1,0 +1,61 @@
+# Test API Endpoints
+
+### Register Admin
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123",
+  "email": "admin@clothingstore.com",
+  "role": "ADMIN"
+}
+
+### Register Customer
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "customer",
+  "password": "customer123",
+  "email": "customer@example.com",
+  "role": "CUSTOMER"
+}
+
+### Login Admin
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### Create Category
+POST http://localhost:8080/api/categories
+Content-Type: application/json
+
+{
+  "name": "Men",
+  "description": "Men's clothing"
+}
+
+### Get All Categories
+GET http://localhost:8080/api/categories
+
+### Create Product
+POST http://localhost:8080/api/products
+Content-Type: application/json
+
+{
+  "name": "Men's T-Shirt",
+  "description": "Cotton T-Shirt",
+  "price": 29.99,
+  "stockQuantity": 100,
+  "category": {
+    "id": 1
+  }
+}
+
+### Get All Products
+GET http://localhost:8080/api/products

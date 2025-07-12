@@ -1,0 +1,160 @@
+@startuml Use Case Diagram
+!define PLANTUML_LIMIT_SIZE 8192
+skinparam backgroundColor #FFFFFF
+skinparam actor {
+    BackgroundColor #F0F0F0
+    BorderColor #000000
+    FontColor #000000
+    FontSize 12
+}
+skinparam usecase {
+    BackgroundColor #F8F8F8
+    BorderColor #000000
+    FontColor #000000
+    HeaderBackgroundColor #000000
+    HeaderFontColor #FFFFFF
+    FontSize 10
+}
+skinparam package {
+    BackgroundColor #FAFAFA
+    BorderColor #000000
+    FontColor #000000
+}
+skinparam arrow {
+    Color #000000
+    FontColor #000000
+}
+skinparam note {
+    BackgroundColor #FAFAFA
+    BorderColor #000000
+    FontColor #000000
+}
+
+title E-Commerce Application - Use Case Diagram
+
+left to right direction
+
+actor "Customer" as customer
+actor "Admin" as admin
+
+package "E-Commerce System" {
+    
+    package "Authentication System" {
+        usecase "Register Account" as register
+        usecase "Login" as login
+        usecase "Logout" as logout
+        usecase "View Profile" as profile
+        usecase "Update Profile" as updateProfile
+    }
+    
+    package "Product Management" {
+        usecase "Browse Products" as browseProducts
+        usecase "Search Products" as searchProducts
+        usecase "View Product Details" as viewProduct
+        usecase "Filter Products" as filterProducts
+        usecase "Sort Products" as sortProducts
+        usecase "Add Product" as addProduct
+        usecase "Update Product" as updateProduct
+        usecase "Delete Product" as deleteProduct
+        usecase "Apply Discount" as applyDiscount
+        usecase "Manage Categories" as manageCategories
+    }
+    
+    package "Shopping Cart System" {
+        usecase "Add to Cart" as addToCart
+        usecase "View Cart" as viewCart
+        usecase "Update Cart Quantity" as updateCart
+        usecase "Remove from Cart" as removeFromCart
+        usecase "Clear Cart" as clearCart
+        usecase "Select Product Size" as selectSize
+    }
+    
+    package "Wishlist System" {
+        usecase "Add to Wishlist" as addToWishlist
+        usecase "View Wishlist" as viewWishlist
+        usecase "Remove from Wishlist" as removeFromWishlist
+        usecase "Move to Cart from Wishlist" as moveToCart
+    }
+    
+    package "Order Management" {
+        usecase "Place Order" as placeOrder
+        usecase "View Order History" as viewOrders
+        usecase "Track Order Status" as trackOrder
+        usecase "Cancel Order" as cancelOrder
+        usecase "Request Exchange" as requestExchange
+        usecase "Request Replacement" as requestReplacement
+        usecase "Manage All Orders" as manageOrders
+        usecase "Update Order Status" as updateOrderStatus
+    }
+    
+    package "Payment System" {
+        usecase "Select Payment Method" as selectPayment
+        usecase "Process Online Payment" as processPayment
+        usecase "Verify OTP" as verifyOTP
+        usecase "Choose Cash on Delivery" as chooseCOD
+        usecase "Generate Payment Receipt" as generateReceipt
+    }
+    
+    package "Coupon System" {
+        usecase "Apply Coupon" as applyCoupon
+        usecase "Validate Coupon" as validateCoupon
+        usecase "Create Coupon" as createCoupon
+        usecase "Manage Coupons" as manageCoupons
+        usecase "Track Coupon Usage" as trackCouponUsage
+    }
+    
+    package "Address Management" {
+        usecase "Add Shipping Address" as addAddress
+        usecase "Select State/City" as selectLocation
+        usecase "Validate Address" as validateAddress
+        usecase "Save Address" as saveAddress
+    }
+    
+    package "Review System" {
+        usecase "Write Product Review" as writeReview
+        usecase "Rate Product" as rateProduct
+        usecase "View Product Reviews" as viewReviews
+        usecase "Moderate Reviews" as moderateReviews
+    }
+    
+    package "Admin Dashboard" {
+        usecase "View Dashboard Statistics" as viewStats
+        usecase "Manage Users" as manageUsers
+        usecase "Generate Reports" as generateReports
+        usecase "Monitor System Health" as monitorSystem
+    }
+}
+
+' Customer Core Actions
+customer --> login : "authenticates"
+customer --> browseProducts : "views catalog"
+customer --> addToCart : "adds items"
+customer --> placeOrder : "purchases"
+customer --> viewOrders : "tracks orders"
+customer --> addToWishlist : "saves favorites"
+customer --> applyCoupon : "applies discounts"
+customer --> writeReview : "provides feedback"
+
+' Admin Core Actions
+admin --> login : "authenticates"
+admin --> addProduct : "manages catalog"
+admin --> manageOrders : "processes orders"
+admin --> createCoupon : "creates offers"
+admin --> viewStats : "monitors system"
+admin --> manageUsers : "administers users"
+
+' Use Case Extensions and Includes
+placeOrder ..> addAddress : <<include>>
+placeOrder ..> selectPayment : <<include>>
+processPayment ..> verifyOTP : <<include>>
+applyCoupon ..> validateCoupon : <<include>>
+addToCart ..> selectSize : <<extend>>
+placeOrder ..> applyCoupon : <<extend>>
+placeOrder ..> generateReceipt : <<include>>
+
+note top of customer : "Registered user with\nauthentication required"
+note top of admin : "Administrative user with\nelevated privileges"
+
+note bottom of "E-Commerce System" : "Complete e-commerce functionality\nwith role-based access control"
+
+@enduml

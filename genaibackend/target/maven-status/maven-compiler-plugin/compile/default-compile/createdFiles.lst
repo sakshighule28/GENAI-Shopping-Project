@@ -1,0 +1,14 @@
+com\clothingstore\service\UserService.class
+com\clothingstore\security\JwtUtil.class
+com\clothingstore\dto\RegisterRequest.class
+com\clothingstore\controller\CategoryController.class
+com\clothingstore\entity\User$Role.class
+com\clothingstore\entity\Category.class
+com\clothingstore\entity\User.class
+com\clothingstore\service\CategoryService.class
+com\clothingstore\repository\CategoryRepository.class
+com\clothingstore\dto\LoginRequest.class
+com\clothingstore\ClothingStoreApplication.class
+com\clothingstore\controller\AuthController.class
+com\clothingstore\repository\UserRepository.class
+com\clothingstore\config\SecurityConfig.class

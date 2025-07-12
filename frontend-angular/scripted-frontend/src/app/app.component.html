@@ -1,0 +1,864 @@
+<!-- Header -->
+<header class="header" *ngIf="!showAuthForm">
+  <div class="container">
+    <div class="header-content">
+      <!-- Logo -->
+      <div class="logo">
+        <h1>SCRIPTED</h1>
+        <span class="tagline">Women's Fashion</span>
+      </div>
+
+      <!-- Navigation for Customer -->
+      <nav class="nav" *ngIf="isCustomer()">
+        <a href="#" (click)="setActiveTab('home')" [class.active]="activeTab === 'home'">Home</a>
+        <a href="#" (click)="setActiveTab('products')" [class.active]="activeTab === 'products'">Shop</a>
+        <a href="#" (click)="setActiveTab('wishlist')" [class.active]="activeTab === 'wishlist'">Wishlist</a>
+        <a href="#" (click)="setActiveTab('orders')" [class.active]="activeTab === 'orders'">My Orders</a>
+      </nav>
+
+      <!-- Admin Navigation -->
+      <nav class="nav" *ngIf="isAdmin()">
+        <a href="#" (click)="setActiveTab('dashboard')" [class.active]="activeTab === 'dashboard'">Dashboard</a>
+        <a href="#" (click)="setActiveTab('products')" [class.active]="activeTab === 'products'">Products</a>
+        <a href="#" (click)="setActiveTab('categories')" [class.active]="activeTab === 'categories'">Categories</a>
+        <a href="#" (click)="setActiveTab('orders')" [class.active]="activeTab === 'orders'">Orders</a>
+      </nav>
+
+      <!-- User Actions -->
+      <div class="user-actions">
+
+        
+        <div class="search-icon" *ngIf="isCustomer()" (click)="setActiveTab('products')">
+          <i class="fas fa-search"></i>
+        </div>
+        
+        <div class="cart-icon" *ngIf="isCustomer()" (click)="setActiveTab('cart')">
+          <i class="fas fa-shopping-bag"></i>
+          <span class="cart-count" *ngIf="cartCount > 0">{{cartCount}}</span>
+        </div>
+        
+        <div class="notification-icon" (click)="toggleNotifications()">
+          <i class="fas fa-bell"></i>
+          <span class="notification-dot" *ngIf="notifications.length > 0"></span>
+        </div>
+        
+        <div class="user-menu">
+          <span class="username">{{currentUser?.username}}</span>
+          <button class="btn btn-outline" (click)="logout()">Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Notifications Dropdown -->
+<div class="notifications-dropdown" *ngIf="showNotifications && !showAuthForm">
+  <div class="notifications-header">
+    <h4>Notifications</h4>
+  </div>
+  <div class="notifications-list" *ngIf="notifications.length > 0">
+    <div class="notification-item" *ngFor="let notification of notifications; let i = index">
+      <div class="notification-content">
+        <p class="notification-message">{{notification.message}}</p>
+        <span class="notification-time">{{getTimeAgo(notification.timestamp)}}</span>
+      </div>
+      <button class="remove-notification" (click)="removeNotification(i)">&times;</button>
+    </div>
+  </div>
+  <div class="no-notifications" *ngIf="notifications.length === 0">
+    <i class="fas fa-check-circle"></i>
+    <p>You're all caught up!</p>
+  </div>
+</div>
+
+<!-- Auth Forms -->
+<div class="auth-container" *ngIf="showAuthForm">
+  <div class="auth-card">
+    <div class="logo-center">
+      <h1>SCRIPTED</h1>
+      <p>Women's Fashion</p>
+    </div>
+
+    <!-- Login Form -->
+    <form *ngIf="authMode === 'login'" [formGroup]="loginForm" (ngSubmit)="login()" class="auth-form">
+      <h2>Sign In</h2>
+      
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-control" formControlName="username" 
+               autocomplete="username"
+               [class.error]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+        <div class="form-error" *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+          Username is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-control" formControlName="password"
+               autocomplete="current-password"
+               [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+        <div class="form-error" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          Password is required
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100" [disabled]="loginForm.invalid || loading">
+        <span *ngIf="loading" class="spinner"></span>
+        Sign In
+      </button>
+
+      <p class="auth-switch">
+        Don't have an account? 
+        <a href="#" (click)="switchAuthMode('register')">Create Account</a>
+      </p>
+    </form>
+
+    <!-- Register Form -->
+    <form *ngIf="authMode === 'register'" [formGroup]="registerForm" (ngSubmit)="register()" class="auth-form">
+      <h2>Create Account</h2>
+      
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-control" formControlName="username"
+               autocomplete="username"
+               [class.error]="registerForm.get('username')?.invalid && registerForm.get('username')?.touched">
+        <div class="form-error" *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched">
+          Username is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" formControlName="email"
+               autocomplete="email"
+               [class.error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+        <div class="form-error" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+          Valid email is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-control" formControlName="password"
+               autocomplete="new-password"
+               [class.error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+        <div class="form-error" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+          Password must be at least 6 characters
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Role</label>
+        <select class="form-control" formControlName="role">
+          <option value="CUSTOMER">Customer</option>
+          <option value="ADMIN">Admin</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100" [disabled]="registerForm.invalid || loading">
+        <span *ngIf="loading" class="spinner"></span>
+        Create Account
+      </button>
+
+      <p class="auth-switch">
+        Already have an account? 
+        <a href="#" (click)="switchAuthMode('login')">Sign In</a>
+      </p>
+    </form>
+  </div>
+</div>
+
+<!-- Main Content -->
+<main class="main-content" *ngIf="!showAuthForm">
+  <div class="container">
+    
+
+    
+    <!-- Cart Tab -->
+    <div *ngIf="activeTab === 'cart'">
+      <app-cart></app-cart>
+    </div>
+
+    <!-- Orders Tab -->
+    <div *ngIf="activeTab === 'orders'" class="orders-section">
+      <h2>My Orders</h2>
+      
+      <div *ngIf="!customerOrders || customerOrders.length === 0" class="empty-orders">
+        <p>No orders yet</p>
+        <button class="btn btn-primary" (click)="setActiveTab('products')">Start Shopping</button>
+      </div>
+      
+      <div class="orders-list" *ngIf="customerOrders && customerOrders.length > 0">
+        <div class="order-card" *ngFor="let order of customerOrders">
+          <div class="order-header">
+            <span class="order-id">Order #{{order.id}}</span>
+            <span class="order-status" [ngClass]="'status-' + order.status.toLowerCase()">{{order.status}}</span>
+          </div>
+          <div class="order-details">
+            <p><strong>Date:</strong> {{order.orderDate | date}}</p>
+            <p><strong>Total:</strong> ₹{{order.totalAmount}}</p>
+            <p><strong>Address:</strong> {{order.shippingAddress}}, {{order.city}}</p>
+          </div>
+          <div class="order-actions" *ngIf="order.status === 'DELIVERED'">
+            <button class="btn btn-outline" (click)="requestExchange(order)">Exchange</button>
+            <button class="btn btn-outline" (click)="requestReplace(order)">Replace</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wishlist Tab -->
+    <div *ngIf="activeTab === 'wishlist'" class="products-section">
+      <div class="products-content" style="padding-top: 0;">
+        <h4 style="margin: 0; font-size: 1rem;">My Wishlist ({{wishlistProducts.length}} items)</h4>
+        
+        <div *ngIf="wishlistProducts.length === 0" style="text-align: center; padding: 3rem; color: #666;">
+          <i class="fas fa-heart" style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;"></i>
+          <h3>Empty Wishlist</h3>
+          <p>Add items to your wishlist to see them here</p>
+          <button class="btn btn-primary" (click)="setActiveTab('products')">Browse Products</button>
+        </div>
+
+        <div *ngIf="wishlistProducts.length > 0" style="position: relative; display: flex; align-items: center; justify-content: center; padding: 0.5rem 0; height: 280px;">
+          <!-- Left Arrow -->
+          <button *ngIf="currentWishlistIndex > 0" 
+                  (click)="previousWishlistItem()" 
+                  style="position: absolute; left: 35%; z-index: 10; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          
+          <!-- Products Container -->
+          <div style="display: flex; align-items: center; justify-content: center; gap: 2rem; width: 100%; max-width: 600px;">
+            <!-- Left Product (smaller) -->
+            <div *ngIf="currentWishlistIndex > 0" 
+                 class="product-card" 
+                 (click)="previousWishlistItem()"
+                 style="width: 200px; opacity: 0.7; transform: scale(0.85); transition: all 0.3s ease; cursor: pointer; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+              <div class="product-image" style="height: 200px; position: relative;">
+                <img [src]="wishlistProducts[currentWishlistIndex - 1].imageUrl || 'assets/placeholder.jpg'" [alt]="wishlistProducts[currentWishlistIndex - 1].name" style="width: 100%; height: 100%; object-fit: cover;">
+                <div style="position: absolute; top: 0; left: 0; right: 0; background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, transparent 50%); padding: 1rem; color: white;">
+                  <h5 style="margin: 0 0 0.2rem 0; font-size: 0.8rem; font-weight: 600;">{{wishlistProducts[currentWishlistIndex - 1].name}}</h5>
+                  <p style="margin: 0 0 0.2rem 0; font-size: 0.7rem; opacity: 0.9;">{{wishlistProducts[currentWishlistIndex - 1].brand}}</p>
+                  <span style="font-size: 0.8rem; font-weight: bold;">₹{{wishlistProducts[currentWishlistIndex - 1].discountedPrice || wishlistProducts[currentWishlistIndex - 1].basePrice}}</span>
+                </div>
+              </div>
+              <div style="padding: 0.5rem; text-align: center; background: white;">
+                <button class="btn btn-primary" style="width: 100%; font-size: 0.7rem; padding: 0.3rem;">Add to Cart</button>
+              </div>
+            </div>
+            
+            <!-- Center Product (larger) -->
+            <div class="product-card" 
+                 (click)="viewProduct(wishlistProducts[currentWishlistIndex])"
+                 style="width: 250px; transform: scale(1); transition: all 0.3s ease; cursor: pointer; z-index: 5; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.15);">
+              <div class="product-image" style="height: 250px; position: relative;">
+                <img [src]="wishlistProducts[currentWishlistIndex].imageUrl || 'assets/placeholder.jpg'" [alt]="wishlistProducts[currentWishlistIndex].name" style="width: 100%; height: 100%; object-fit: cover;">
+                <div class="wishlist-heart filled" (click)="toggleWishlist(wishlistProducts[currentWishlistIndex], $event)" style="position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.9); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                  <i class="fas fa-heart" style="color: #e74c3c;"></i>
+                </div>
+                <div style="position: absolute; top: 0; left: 0; right: 0; background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, transparent 60%); padding: 1rem; color: white;">
+                  <h3 style="margin: 0 0 0.3rem 0; font-size: 1.1rem; font-weight: 600;">{{wishlistProducts[currentWishlistIndex].name}}</h3>
+                  <p style="margin: 0 0 0.3rem 0; font-size: 0.9rem; opacity: 0.9;">{{wishlistProducts[currentWishlistIndex].brand}}</p>
+                  <span style="font-size: 1.2rem; font-weight: bold;">₹{{wishlistProducts[currentWishlistIndex].discountedPrice || wishlistProducts[currentWishlistIndex].basePrice}}</span>
+                </div>
+              </div>
+              <div style="padding: 0.8rem; text-align: center; background: white;">
+                <button class="btn btn-primary" (click)="addToCart(wishlistProducts[currentWishlistIndex], $event)" style="width: 100%; padding: 0.6rem; font-size: 0.9rem;">Add to Cart</button>
+              </div>
+            </div>
+            
+            <!-- Right Product (smaller) -->
+            <div *ngIf="currentWishlistIndex < wishlistProducts.length - 1" 
+                 class="product-card" 
+                 (click)="nextWishlistItem()"
+                 style="width: 200px; opacity: 0.7; transform: scale(0.85); transition: all 0.3s ease; cursor: pointer; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+              <div class="product-image" style="height: 200px; position: relative;">
+                <img [src]="wishlistProducts[currentWishlistIndex + 1].imageUrl || 'assets/placeholder.jpg'" [alt]="wishlistProducts[currentWishlistIndex + 1].name" style="width: 100%; height: 100%; object-fit: cover;">
+                <div style="position: absolute; top: 0; left: 0; right: 0; background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, transparent 50%); padding: 1rem; color: white;">
+                  <h5 style="margin: 0 0 0.2rem 0; font-size: 0.8rem; font-weight: 600;">{{wishlistProducts[currentWishlistIndex + 1].name}}</h5>
+                  <p style="margin: 0 0 0.2rem 0; font-size: 0.7rem; opacity: 0.9;">{{wishlistProducts[currentWishlistIndex + 1].brand}}</p>
+                  <span style="font-size: 0.8rem; font-weight: bold;">₹{{wishlistProducts[currentWishlistIndex + 1].discountedPrice || wishlistProducts[currentWishlistIndex + 1].basePrice}}</span>
+                </div>
+              </div>
+              <div style="padding: 0.5rem; text-align: center; background: white;">
+                <button class="btn btn-primary" style="width: 100%; font-size: 0.7rem; padding: 0.3rem;">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Right Arrow -->
+          <button *ngIf="currentWishlistIndex < wishlistProducts.length - 1" 
+                  (click)="nextWishlistItem()" 
+                  style="position: absolute; right: 35%; z-index: 10; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Customer Dashboard -->
+    <div>
+      <div *ngIf="activeTab === 'home'" class="home-section">
+        <div class="hero-banner">
+          <h2>New Collection</h2>
+          <p>Discover the latest trends in women's fashion</p>
+          <button class="btn btn-primary" (click)="goToLatestProducts()">Shop Now</button>
+        </div>
+        
+        <div class="new-collection" *ngIf="newProducts.length > 0">
+          <h3>Latest Arrivals</h3>
+          <div class="new-products-grid">
+            <div class="product-card" *ngFor="let product of newProducts" (click)="viewProduct(product)">
+              <div class="product-image">
+                <img [src]="product.imageUrl || 'assets/placeholder.jpg'" [alt]="product.name">
+                <div class="wishlist-heart" [class.filled]="product.in_wishlist" (click)="toggleWishlist(product, $event)">
+                  <i class="fas fa-heart"></i>
+                </div>
+              </div>
+              <div class="product-info">
+                <h4>{{product.name}}</h4>
+                <p class="brand">{{product.brand}}</p>
+                <div class="price">
+                  <span class="current-price">₹{{product.discountedPrice || product.basePrice}}</span>
+                  <span class="original-price" *ngIf="product.discountPercent && product.discountPercent > 0">₹{{product.basePrice}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="featured-categories">
+          <h3>Shop by Category</h3>
+          <div class="category-grid">
+            <div class="category-card" *ngFor="let category of categories" (click)="filterByCategory(category.id!)">
+              <h4>{{category.name}}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products Tab -->
+      <div *ngIf="activeTab === 'products'" class="products-section">
+        <div class="products-layout">
+          <!-- Sidebar Filters -->
+          <div class="filters-sidebar">
+            <h3>Filters</h3>
+            
+            <div class="filter-section">
+              <h4>Categories</h4>
+              <div class="filter-options">
+                <div class="filter-option select-all" 
+                     [class.selected]="selectedCategories.length === categories.length" 
+                     (click)="toggleAllCategories()">
+                  All Categories
+                </div>
+                <div class="filter-option" *ngFor="let category of categories" 
+                     [class.selected]="selectedCategories.includes(category.id!)" 
+                     (click)="toggleCategoryFilter(category.id!)">
+                  {{category.name}}
+                </div>
+              </div>
+            </div>
+            
+            <div class="filter-section">
+              <h4>Brands</h4>
+              <div class="filter-options">
+                <div class="filter-option select-all" 
+                     [class.selected]="selectedBrands.length === brands.length" 
+                     (click)="toggleAllBrands()">
+                  All Brands
+                </div>
+                <div class="filter-option" *ngFor="let brand of brands" 
+                     [class.selected]="selectedBrands.includes(brand)" 
+                     (click)="toggleBrandFilter(brand)">
+                  {{brand}}
+                </div>
+              </div>
+            </div>
+            
+            <div class="filter-section">
+              <h4>Price Range</h4>
+              <div class="filter-options">
+                <div class="filter-option" [class.selected]="selectedPriceRanges.includes('0-1000')" (click)="togglePriceFilter('0-1000')">Under ₹1,000</div>
+                <div class="filter-option" [class.selected]="selectedPriceRanges.includes('1000-8080')" (click)="togglePriceFilter('1000-8080')">₹1,000 - ₹5,000</div>
+                <div class="filter-option" [class.selected]="selectedPriceRanges.includes('8080-10000')" (click)="togglePriceFilter('8080-10000')">₹5,000 - ₹10,000</div>
+                <div class="filter-option" [class.selected]="selectedPriceRanges.includes('10000+')" (click)="togglePriceFilter('10000+')">Above ₹10,000</div>
+              </div>
+            </div>
+            
+            <div class="filter-actions">
+              <button class="btn btn-primary" (click)="applyFilters()">Apply</button>
+              <button class="btn btn-outline" (click)="clearFilters()">Clear</button>
+            </div>
+          </div>
+          
+          <!-- Products Content -->
+          <div class="products-content">
+            <!-- Sort Filter -->
+            <div class="sort-filter-section">
+              <div class="filter-icon" (click)="showSortFilter = !showSortFilter">
+                <i class="fas fa-filter"></i>
+                <span>Sort</span>
+              </div>
+              
+              <div class="sort-dropdown" *ngIf="showSortFilter">
+                <div class="sort-options">
+                  <label class="sort-option">
+                    <input type="checkbox" [(ngModel)]="sortOptions.latest" (change)="applySortFilter()">
+                    <span>Latest</span>
+                  </label>
+                  <label class="sort-option">
+                    <input type="checkbox" [(ngModel)]="sortOptions.priceLowToHigh" (change)="applySortFilter()">
+                    <span>Price: Low to High</span>
+                  </label>
+                  <label class="sort-option">
+                    <input type="checkbox" [(ngModel)]="sortOptions.priceHighToLow" (change)="applySortFilter()">
+                    <span>Price: High to Low</span>
+                  </label>
+                  <label class="sort-option">
+                    <input type="checkbox" [(ngModel)]="sortOptions.popularity" (change)="applySortFilter()">
+                    <span>Popularity</span>
+                  </label>
+                </div>
+                <div class="sort-actions">
+                  <button class="btn btn-sm" (click)="applySortFilterAndClose()">Apply</button>
+                  <button class="btn btn-outline btn-sm" (click)="clearSortFilter()">Clear</button>
+                </div>
+              </div>
+            </div>
+        
+            <!-- No Products Message -->
+            <div *ngIf="filteredProducts.length === 0" class="no-products">
+              <p>No products found for the selected filters.</p>
+            </div>
+
+            <div class="products-grid" *ngIf="filteredProducts.length > 0">
+          <div class="product-card" *ngFor="let product of filteredProducts" (click)="viewProduct(product)">
+            <div class="product-image">
+              <img [src]="product.imageUrl || 'assets/placeholder.jpg'" [alt]="product.name">
+              <div class="wishlist-heart" [class.filled]="product.in_wishlist" (click)="toggleWishlist(product, $event)">
+                <i class="fas fa-heart"></i>
+              </div>
+              <div class="product-overlay">
+                <button class="btn btn-primary" (click)="addToCart(product, $event)">Add to Cart</button>
+              </div>
+            </div>
+            <div class="product-info">
+              <h4>{{product.name}}</h4>
+              <p class="brand">{{product.brand}}</p>
+              <div class="price">
+                <span class="current-price">₹{{product.discountedPrice || product.basePrice}}</span>
+                <span class="original-price" *ngIf="product.discountPercent && product.discountPercent > 0">₹{{product.basePrice}}</span>
+                <span class="discount" *ngIf="product.discountPercent && product.discountPercent > 0">{{product.discountPercent}}% OFF</span>
+              </div>
+              <div class="rating" *ngIf="product.averageRating && product.averageRating > 0">
+                <span class="stars">★★★★☆</span>
+                <span class="rating-text">({{product.totalReviews}})</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div *ngIf="isAdmin()">
+      
+      <!-- Dashboard Tab -->
+      <div *ngIf="activeTab === 'dashboard'" class="admin-dashboard">
+        <h2>Admin Dashboard</h2>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>{{products.length}}</h3>
+            <p>Total Products</p>
+          </div>
+          <div class="stat-card">
+            <h3>{{categories.length}}</h3>
+            <p>Categories</p>
+          </div>
+          <div class="stat-card">
+            <h3>{{allOrders.length}}</h3>
+            <p>Total Orders</p>
+          </div>
+          <div class="stat-card">
+            <h3>{{getPendingOrdersCount()}}</h3>
+            <p>Pending Orders</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products Management -->
+      <div *ngIf="activeTab === 'products'" class="admin-products">
+        <div class="section-header">
+          <h2>Products Management</h2>
+          <button class="btn btn-primary" (click)="showProductForm = true">Add Product</button>
+        </div>
+
+        <!-- Add/Edit Product Form -->
+        <div class="form-modal" *ngIf="showProductForm">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3>{{editingProduct ? 'Edit Product' : 'Add Product'}}</h3>
+              <button class="close-btn" (click)="closeProductForm()">&times;</button>
+            </div>
+            
+            <form [formGroup]="productForm" (ngSubmit)="saveProduct()">
+              <div class="form-group">
+                <label class="form-label">Product Name</label>
+                <input type="text" class="form-control" formControlName="name">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" formControlName="description" rows="3"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Base Price</label>
+                <input type="number" class="form-control" formControlName="basePrice">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Stock Quantity</label>
+                <input type="number" class="form-control" formControlName="unitsInStock">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Brand</label>
+                <input type="text" class="form-control" formControlName="brand">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Sizes (comma separated)</label>
+                <input type="text" class="form-control" formControlName="sizes" placeholder="XS,S,M,L,XL">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Image URL</label>
+                <input type="url" class="form-control" formControlName="imageUrl">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Category</label>
+                <select class="form-control" formControlName="categoryName">
+                  <option value="">Select Category</option>
+                  <option *ngFor="let category of categories" [value]="category.name">{{category.name}}</option>
+                </select>
+              </div>
+              
+              <div class="form-actions">
+                <button type="button" class="btn btn-secondary" (click)="closeProductForm()">Cancel</button>
+                <button type="submit" class="btn btn-primary" [disabled]="productForm.invalid">Save Product</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Products List -->
+        <div class="products-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Brand</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Category</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let product of products">
+                <td>{{product.name}}</td>
+                <td>{{product.brand}}</td>
+                <td>₹{{product.discountedPrice || product.basePrice}}</td>
+                <td>{{product.unitsInStock}}</td>
+                <td>{{getCategoryName(product.categoryId)}}</td>
+                <td>
+                  <button class="btn btn-outline btn-sm" (click)="editProduct(product)">Edit</button>
+                  <button class="btn btn-outline btn-sm" (click)="showDiscountForm(product)">Discount</button>
+                  <button class="btn btn-outline btn-sm" (click)="deleteProduct(product.id!)">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Categories Management -->
+      <div *ngIf="activeTab === 'categories'" class="admin-categories">
+        <div class="section-header">
+          <h2>Categories Management</h2>
+          <button class="btn btn-primary" (click)="showCategoryForm = true">Add Category</button>
+        </div>
+
+        <!-- Add Category Form -->
+        <div class="form-modal" *ngIf="showCategoryForm">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3>Add Category</h3>
+              <button class="close-btn" (click)="closeCategoryForm()">&times;</button>
+            </div>
+            
+            <form [formGroup]="categoryForm" (ngSubmit)="saveCategory()">
+              <div class="form-group">
+                <label class="form-label">Category Name</label>
+                <input type="text" class="form-control" formControlName="name">
+              </div>
+              
+              <div class="form-actions">
+                <button type="button" class="btn btn-secondary" (click)="closeCategoryForm()">Cancel</button>
+                <button type="submit" class="btn btn-primary" [disabled]="categoryForm.invalid">Save Category</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Categories List -->
+        <div class="categories-grid">
+          <div class="category-card" *ngFor="let category of categories">
+            <h4>{{category.name}}</h4>
+            <div class="category-actions">
+              <button class="btn btn-outline btn-sm" (click)="deleteCategory(category.id!)">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orders Management -->
+      <div *ngIf="activeTab === 'orders'" class="admin-orders">
+        <h2>Orders Management</h2>
+        
+        <div class="orders-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let order of allOrders">
+                <td>#{{order.id}}</td>
+                <td>User {{order.userId}}</td>
+                <td>{{order.orderDate | date}}</td>
+                <td>₹{{order.totalAmount}}</td>
+                <td>
+                  <span class="status-badge" [ngClass]="'status-' + order.status.toLowerCase()">
+                    {{order.status}}
+                  </span>
+                </td>
+                <td>
+                  <select (change)="updateOrderStatus(order, $event)" [value]="order.status">
+                    <option value="PLACED">Placed</option>
+                    <option value="CONFIRMED">Confirmed</option>
+                    <option value="SHIPPED">Shipped</option>
+                    <option value="DELIVERED">Delivered</option>
+                    <option value="CANCELLED">Cancelled</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<!-- Checkout Modal -->
+<div class="checkout-modal" *ngIf="showCheckout">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Checkout</h3>
+      <button class="close-btn" (click)="closeCheckout()">&times;</button>
+    </div>
+    
+    <form [formGroup]="checkoutForm" (ngSubmit)="placeOrder()">
+      <div class="form-group">
+        <label class="form-label">Shipping Address</label>
+        <textarea class="form-control" formControlName="address" rows="3"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">City</label>
+        <input type="text" class="form-control" formControlName="city">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">State</label>
+        <input type="text" class="form-control" formControlName="state">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Pincode</label>
+        <input type="text" class="form-control" formControlName="pincode">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input type="tel" class="form-control" formControlName="phone">
+      </div>
+      
+      <div class="payment-section">
+        <h4>Payment Method</h4>
+        <div class="payment-options">
+          <label>
+            <input type="radio" name="payment" value="card" [(ngModel)]="paymentMethod">
+            Credit/Debit Card
+          </label>
+          <label>
+            <input type="radio" name="payment" value="upi" [(ngModel)]="paymentMethod">
+            UPI
+          </label>
+          <label>
+            <input type="radio" name="payment" value="netbanking" [(ngModel)]="paymentMethod">
+            Net Banking
+          </label>
+        </div>
+      </div>
+      
+      <div class="order-summary">
+        <h4>Order Summary</h4>
+        <p>Total Items: {{cartItems?.length || 0}}</p>
+        <p>Total Amount: ₹{{cartTotal}}</p>
+      </div>
+      
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeCheckout()">Cancel</button>
+        <button type="submit" class="btn btn-primary" [disabled]="checkoutForm.invalid || !paymentMethod">
+          Place Order
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Product Detail Modal -->
+<div class="product-detail-modal" *ngIf="selectedProduct">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>{{selectedProduct.name}}</h3>
+      <button class="close-btn" (click)="closeProductDetail()">&times;</button>
+    </div>
+    
+    <div class="product-detail-content">
+      <div class="product-image-section">
+        <img [src]="selectedProduct.imageUrl || 'assets/placeholder.jpg'" [alt]="selectedProduct.name">
+        
+        <!-- Ratings Section -->
+        <div class="ratings-section" style="margin-top: 1rem; padding: 1rem; background: #f9f9f9; border-radius: 8px;">
+          <h4>Ratings & Reviews</h4>
+          <div *ngIf="selectedProduct.averageRating && selectedProduct.averageRating > 0; else noRatings">
+            <div class="rating-summary" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+              <div class="stars">
+                <span *ngFor="let star of getStarArray(selectedProduct.averageRating)" 
+                      [style.color]="star ? '#ffc107' : '#e0e0e0'">★</span>
+              </div>
+              <span class="rating-text">{{selectedProduct.averageRating}} ({{selectedProduct.totalReviews}} reviews)</span>
+            </div>
+          </div>
+          <ng-template #noRatings>
+            <div class="no-ratings" style="text-align: center; color: #666;">
+              <div class="stars" style="margin-bottom: 0.5rem;">
+                <span *ngFor="let i of [1,2,3,4,5]" style="color: #e0e0e0;">★</span>
+              </div>
+              <p>No reviews yet</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+      
+      <div class="product-info-section">
+        <div class="brand">{{selectedProduct.brand}}</div>
+        <h2>{{selectedProduct.name}}</h2>
+        <p class="description">{{selectedProduct.description}}</p>
+        
+        <div class="price-section">
+          <span class="current-price">₹{{selectedProduct.discountedPrice || selectedProduct.basePrice}}</span>
+          <span class="original-price" *ngIf="selectedProduct.discountPercent && selectedProduct.discountPercent > 0">₹{{selectedProduct.basePrice}}</span>
+          <span class="discount" *ngIf="selectedProduct.discountPercent && selectedProduct.discountPercent > 0">{{selectedProduct.discountPercent}}% OFF</span>
+        </div>
+        
+        <div class="size-section" *ngIf="selectedProduct.sizes">
+          <h4>Select Size</h4>
+          <div class="size-options">
+            <button 
+              *ngFor="let size of getSizes(selectedProduct.sizes)" 
+              class="size-btn" 
+              [class.selected]="selectedSize === size"
+              (click)="selectSize(size)">
+              {{size}}
+            </button>
+          </div>
+          <p *ngIf="showSizeError" style="color: #e74c3c; font-size: 0.8rem; margin: 0.5rem 0 0 0;">Please select a size first</p>
+        </div>
+        
+        <div class="quantity-section">
+          <h4>Quantity</h4>
+          <div class="quantity-controls">
+            <button (click)="decreaseQuantity()" [disabled]="selectedQuantity <= 1">-</button>
+            <span>{{selectedQuantity}}</span>
+            <button (click)="increaseQuantity()" [disabled]="selectedQuantity >= selectedProduct.unitsInStock">+</button>
+          </div>
+          <p class="stock-info">{{selectedProduct.unitsInStock}} items available</p>
+        </div>
+        
+        <div class="action-buttons">
+          <button class="btn btn-primary" (click)="addSelectedToCart()" [disabled]="!canAddToCart()">Add to Cart</button>
+        </div>
+        
+        <div class="product-reviews" *ngIf="selectedProduct.averageRating && selectedProduct.averageRating > 0">
+          <div class="rating-display">
+            <span class="stars">★★★★☆</span>
+            <span class="rating-text">{{selectedProduct.averageRating}} ({{selectedProduct.totalReviews}} reviews)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Related Products -->
+    <div class="related-products" *ngIf="relatedProducts.length > 0">
+      <h3>You might also like</h3>
+      <div class="related-grid">
+        <div class="related-item" *ngFor="let product of relatedProducts" (click)="viewProduct(product)">
+          <img [src]="product.imageUrl || 'assets/placeholder.jpg'" [alt]="product.name">
+          <div class="related-info">
+            <h5>{{product.name}}</h5>
+            <span>₹{{product.discountedPrice || product.basePrice}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Customer Reviews -->
+    <div class="customer-reviews" style="margin-top: 2rem; padding: 1rem; border-top: 1px solid #eee;">
+      <h3>Customer Reviews</h3>
+      <div *ngIf="productReviews && productReviews.length > 0; else noReviews">
+        <div class="review-item" *ngFor="let review of productReviews" style="margin-bottom: 1rem; padding: 1rem; background: #f9f9f9; border-radius: 8px;">
+          <div class="review-header" style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <div class="reviewer-rating">
+              <div class="stars">
+                <span *ngFor="let star of getStarArray(review.rating)" 
+                      [style.color]="star ? '#ffc107' : '#e0e0e0'">★</span>
+              </div>
+            </div>
+            <span class="review-date">{{review.reviewDate | date}}</span>
+          </div>
+          <p class="review-comment">{{review.comment}}</p>
+        </div>
+      </div>
+      <ng-template #noReviews>
+        <p style="text-align: center; color: #666;">No reviews yet. Be the first to review this product!</p>
+      </ng-template>
+    </div>
+  </div>
+</div>

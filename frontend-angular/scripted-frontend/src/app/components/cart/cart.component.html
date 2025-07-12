@@ -1,0 +1,276 @@
+<div class="cart-container">
+  <!-- Cart Tabs -->
+  <div class="cart-tabs">
+    <div class="tab-btn" [class.active]="cartTab === 'cart'" [class.disabled]="cartItems.length === 0 && cartTab !== 'cart'">Cart</div>
+    <div class="tab-btn" [class.active]="cartTab === 'address'" [class.disabled]="cartItems.length === 0">Address</div>
+    <div class="tab-btn" [class.active]="cartTab === 'payment'" [class.disabled]="cartItems.length === 0">Payment</div>
+  </div>
+  
+  <!-- Tab Content Container -->
+  <div class="tab-content-container">
+
+  <!-- Empty Cart -->
+  <div *ngIf="cartItems.length === 0" class="empty-cart">
+    <i class="fas fa-shopping-cart" style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;"></i>
+    <h3>Your cart is empty</h3>
+    <p>Add items to get started</p>
+  </div>
+
+    <!-- Cart Tab -->
+    <div class="tab-slide" [class.active]="cartTab === 'cart'" [class.slide-left]="cartTab === 'address' || cartTab === 'payment'">
+      <div *ngIf="cartItems.length > 0" class="cart-content">
+        <!-- Delivery Info Card -->
+        <div class="delivery-info-card">
+          <i class="fas fa-truck"></i>
+          <span>Get delivery by <strong>{{getDeliveryDate()}}</strong></span>
+        </div>
+        
+        <div class="cart-main-layout">
+          <!-- Left Half - Cart Items -->
+          <div class="cart-items-section">
+            <div class="cart-items">
+              <div class="cart-item" *ngFor="let item of cartItems">
+                <div class="item-image">
+                  <img [src]="getProductById(item.productId)?.imageUrl || 'assets/placeholder.jpg'" alt="">
+                </div>
+                <div class="item-details">
+                  <h4>{{getProductById(item.productId)?.name}}</h4>
+                  <p class="brand">{{getProductById(item.productId)?.brand}}</p>
+                  <p class="size" *ngIf="item.size">Size: {{item.size}}</p>
+                  <div class="price">
+                    <span class="current-price">₹{{getDiscountedPrice(item.productId)}}</span>
+                    <span class="original-price" *ngIf="getProductById(item.productId)?.discountPercent && getProductById(item.productId)?.discountPercent! > 0">₹{{getProductById(item.productId)?.basePrice}}</span>
+                    <span class="discount-badge" *ngIf="getProductById(item.productId)?.discountPercent && getProductById(item.productId)?.discountPercent! > 0">{{getProductById(item.productId)?.discountPercent}}% OFF</span>
+                  </div>
+                </div>
+                <div class="quantity-controls">
+                  <button class="qty-btn" (click)="updateCartQuantity(item, -1)" [disabled]="item.quantity <= 1">-</button>
+                  <span class="quantity">{{item.quantity}}</span>
+                  <button class="qty-btn" (click)="updateCartQuantity(item, 1)" [disabled]="item.quantity >= 5">+</button>
+                </div>
+                <div class="item-total">₹{{getItemTotal(item)}}</div>
+                <button class="remove-btn" (click)="removeFromCart(item)">×</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Right Half - Price Details -->
+          <div class="price-details-section">
+            <div class="price-card">
+              <h3>Price Details</h3>
+              
+              <div class="price-row">
+                <span>Total MRP</span>
+                <span>₹{{totalMRP}}</span>
+              </div>
+              
+              <div class="price-row" *ngIf="totalSavings > 0">
+                <span>Discount on MRP</span>
+                <span class="savings">-₹{{totalSavings}}</span>
+              </div>
+              
+              <div class="price-row">
+                <span>Subtotal</span>
+                <span>₹{{subtotal}}</span>
+              </div>
+              
+              <div class="price-row">
+                <span>Platform Fee</span>
+                <span>₹5</span>
+              </div>
+              
+              <div class="price-row">
+                <span>Shipping & Other Charges <a href="#" (click)="showShippingPolicy = true" class="know-more">Know More</a></span>
+                <span class="free">FREE</span>
+              </div>
+              
+              <!-- Coupon Section -->
+              <div class="coupon-section">
+                <div *ngIf="!appliedCoupon" class="apply-coupon">
+                  <input type="text" [(ngModel)]="couponCode" placeholder="Enter coupon code" class="coupon-input">
+                  <button class="apply-btn" (click)="applyCoupon()">Apply Coupon</button>
+                </div>
+                <span class="error-message" *ngIf="showCouponError">{{couponErrorMessage}}</span>
+                <div *ngIf="appliedCoupon" class="applied-coupon">
+                  <span>{{appliedCoupon.code}}</span>
+                  <span class="coupon-discount">-₹{{couponDiscount}}</span>
+                  <button class="remove-coupon" (click)="removeCoupon()">×</button>
+                </div>
+              </div>
+              
+              <div class="total-row">
+                <span><strong>Order Total</strong></span>
+                <span><strong>₹{{orderTotal}}</strong></span>
+              </div>
+              
+              <button class="proceed-btn" (click)="proceedToAddress()">Proceed</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Address Tab -->
+    <div class="tab-slide" [class.active]="cartTab === 'address'" [class.slide-right]="cartTab === 'cart'" [class.slide-left]="cartTab === 'payment'">
+      <div class="address-content">
+        <div class="address-form">
+          <button class="back-btn" (click)="goBackToCart()">← Back</button>
+          <h2>Delivery Address</h2>
+          <form [formGroup]="addressForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" formControlName="fullName" class="form-input" [class.error]="addressForm.get('fullName')?.invalid && addressForm.get('fullName')?.touched">
+                <span class="error-message" *ngIf="addressForm.get('fullName')?.invalid && addressForm.get('fullName')?.touched">Full name is required</span>
+              </div>
+              <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" formControlName="phone" class="form-input" placeholder="10 digit number" [class.error]="addressForm.get('phone')?.invalid && addressForm.get('phone')?.touched">
+                <span class="error-message" *ngIf="addressForm.get('phone')?.invalid && addressForm.get('phone')?.touched">Valid 10-digit phone number required</span>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Address</label>
+              <textarea formControlName="address" class="form-input" rows="3" [class.error]="addressForm.get('address')?.invalid && addressForm.get('address')?.touched"></textarea>
+              <span class="error-message" *ngIf="addressForm.get('address')?.invalid && addressForm.get('address')?.touched">Address is required</span>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label>State</label>
+                <div class="dropdown-container">
+                  <input type="text" [value]="selectedState || stateSearch" (input)="onStateInput($event)" (focus)="onStateFocus()" (click)="onStateFocus()" placeholder="Search state" class="form-input" [class.error]="addressForm.get('state')?.invalid && addressForm.get('state')?.touched">
+                  <div class="dropdown-list" *ngIf="showStateDropdown">
+                    <div class="dropdown-item" *ngFor="let state of filteredStates" (click)="selectState(state)">{{state}}</div>
+                  </div>
+                </div>
+                <span class="error-message" *ngIf="addressForm.get('state')?.invalid && addressForm.get('state')?.touched">State is required</span>
+              </div>
+              <div class="form-group">
+                <label>City</label>
+                <div class="dropdown-container">
+                  <input type="text" [value]="citySearch" (input)="onCityInput($event)" (focus)="onCityFocus()" (click)="onCityFocus()" placeholder="Search city" class="form-input" [class.error]="addressForm.get('city')?.invalid && addressForm.get('city')?.touched" [disabled]="!selectedState">
+                  <div class="dropdown-list" *ngIf="showCityDropdown">
+                    <div class="dropdown-item" *ngFor="let city of filteredCities" (click)="selectCity(city)">{{city}}</div>
+                  </div>
+                </div>
+                <span class="error-message" *ngIf="addressForm.get('city')?.invalid && addressForm.get('city')?.touched">City is required</span>
+              </div>
+              <div class="form-group">
+                <label>Pincode</label>
+                <input type="text" formControlName="pincode" class="form-input" [class.error]="addressForm.get('pincode')?.invalid && addressForm.get('pincode')?.touched">
+                <span class="error-message" *ngIf="addressForm.get('pincode')?.invalid && addressForm.get('pincode')?.touched">Valid 6-digit pincode required</span>
+              </div>
+            </div>
+            
+            <button class="proceed-btn" (click)="proceedToPayment()" [disabled]="addressForm.invalid">Proceed to Pay</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Tab -->
+    <div class="tab-slide" [class.active]="cartTab === 'payment'" [class.slide-right]="cartTab === 'cart' || cartTab === 'address'">
+      <div class="payment-content">
+        <!-- Payment Step -->
+        <div class="payment-form" *ngIf="paymentStep === 'payment'">
+          <button class="back-btn" (click)="cartTab = 'address'">← Back to Address</button>
+          <h2>Payment</h2>
+          
+          <div class="order-summary">
+            <h3>Order Summary</h3>
+            <div class="summary-row">
+              <span>Items ({{cartCount}})</span>
+              <span>₹{{subtotal}}</span>
+            </div>
+            <div class="summary-row" *ngIf="totalSavings > 0">
+              <span>Discount</span>
+              <span class="savings">-₹{{totalSavings}}</span>
+            </div>
+            <div class="summary-row" *ngIf="couponDiscount > 0">
+              <span>Coupon Discount</span>
+              <span class="savings">-₹{{couponDiscount}}</span>
+            </div>
+            <div class="summary-row">
+              <span>Delivery</span>
+              <span class="free">FREE</span>
+            </div>
+            <div class="summary-row">
+              <strong>Total Amount</strong>
+              <strong>₹{{orderTotal}}</strong>
+            </div>
+          </div>
+          
+          <div class="payment-section">
+            <h3>Online Payment</h3>
+            <div class="payment-options">
+              <label class="payment-option">
+                <input type="radio" name="payment" value="upi" [(ngModel)]="selectedPayment">
+                <div class="payment-icon">💳</div>
+                <span class="option-text">UPI</span>
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="payment" value="netbanking" [(ngModel)]="selectedPayment">
+                <div class="payment-icon">🏦</div>
+                <span class="option-text">Net Banking</span>
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="payment" value="card" [(ngModel)]="selectedPayment">
+                <div class="payment-icon">💳</div>
+                <span class="option-text">Credit/Debit Card</span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="payment-section">
+            <h3>Cash on Delivery</h3>
+            <label class="payment-option">
+              <input type="radio" name="payment" value="cod" [(ngModel)]="selectedPayment">
+              <div class="payment-icon">💰</div>
+              <span class="option-text">Pay on Delivery</span>
+            </label>
+          </div>
+          
+          <button class="place-order-btn" (click)="initiatePayment()" [disabled]="!selectedPayment">Place Order</button>
+        </div>
+        
+        <!-- OTP Step -->
+        <div class="payment-form" *ngIf="paymentStep === 'otp'">
+          <h2>Verify Payment</h2>
+          <p>OTP sent to your registered mobile number</p>
+          <input type="text" [(ngModel)]="enteredOtp" placeholder="Enter 6-digit OTP" class="otp-input" maxlength="6">
+          <div class="otp-actions">
+            <button class="place-order-btn" (click)="verifyOtp()" [disabled]="enteredOtp.length !== 6">Verify & Pay</button>
+            <button class="back-btn" (click)="cancelPayment()">Cancel</button>
+          </div>
+        </div>
+        
+        <!-- Success Step -->
+        <div class="payment-form success-page" *ngIf="paymentStep === 'success'">
+          <div class="success-animation">
+            <div class="confetti"></div>
+            <div class="success-emoji">🎉</div>
+          </div>
+          <h2 class="success-title">Payment Successful!</h2>
+          <p class="success-message">Your order is confirmed and will be delivered soon</p>
+          <div class="order-details">
+            <span class="order-label">Order ID:</span>
+            <span class="order-number">{{generatedOrderId}}</span>
+          </div>
+          <button class="ok-btn" (click)="completePayment()">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shipping Policy Modal -->
+  <div *ngIf="showShippingPolicy" class="modal-overlay" (click)="showShippingPolicy = false">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h3>Shipping & Other Charges</h3>
+      <p>Free shipping on all orders above ₹499. For orders below ₹499, shipping charges of ₹40 apply.</p>
+      <p>No additional charges for Cash on Delivery.</p>
+      <button class="close-btn" (click)="showShippingPolicy = false">Close</button>
+    </div>
+  </div>
+</div>

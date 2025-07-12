@@ -1,0 +1,195 @@
+// No Products Message
+.no-products {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border: 1px solid #ddd;
+  
+  p {
+    font-size: 1.25rem;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+}
+
+// Product Detail Modal
+.product-detail-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  
+  .modal-content {
+    background: white;
+    width: 90%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+    
+    .product-detail-content {
+      display: flex;
+      padding: 2rem;
+      gap: 2rem;
+      
+      .product-image-section {
+        flex: 1;
+        
+        img {
+          width: 100%;
+          height: 500px;
+          object-fit: cover;
+        }
+      }
+      
+      .product-info-section {
+        flex: 1;
+        
+        .brand {
+          color: #666;
+          font-size: 0.875rem;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          margin-bottom: 0.5rem;
+        }
+        
+        h2 {
+          font-size: 1.5rem;
+          font-weight: 500;
+          margin-bottom: 1rem;
+        }
+        
+        .description {
+          color: #666;
+          margin-bottom: 2rem;
+          line-height: 1.6;
+        }
+        
+        .price-section {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          margin-bottom: 2rem;
+          
+          .current-price {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #222;
+          }
+          
+          .original-price {
+            text-decoration: line-through;
+            color: #666;
+          }
+          
+          .discount {
+            background: #e74c3c;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+          }
+        }
+        
+        .size-section, .quantity-section {
+          margin-bottom: 2rem;
+          
+          h4 {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            font-weight: 500;
+          }
+        }
+        
+        .size-options {
+          display: flex;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+          
+          .size-btn {
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            
+            &:hover, &.selected {
+              border-color: #222;
+              background: #222;
+              color: white;
+            }
+          }
+        }
+        
+        .quantity-controls {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          margin-bottom: 0.5rem;
+          
+          button {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            font-size: 1.25rem;
+            
+            &:hover:not(:disabled) {
+              background: #fafafa;
+            }
+            
+            &:disabled {
+              opacity: 0.5;
+              cursor: not-allowed;
+            }
+          }
+          
+          span {
+            font-size: 1.125rem;
+            font-weight: 500;
+            min-width: 40px;
+            text-align: center;
+          }
+        }
+        
+        .stock-info {
+          font-size: 0.875rem;
+          color: #666;
+        }
+        
+        .action-buttons {
+          margin-bottom: 2rem;
+          
+          .btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .product-detail-modal {
+    .modal-content {
+      .product-detail-content {
+        flex-direction: column;
+        padding: 1rem;
+        
+        .product-image-section img {
+          height: 300px;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,136 @@
+.sort-filter-section {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.filter-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.2rem;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+  &:hover {
+    background: #f8f9fa;
+    border-color: #007bff;
+    transform: translateY(-1px);
+  }
+  
+  i {
+    color: #495057;
+    font-size: 0.9rem;
+  }
+  
+  span {
+    color: #495057;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+}
+
+.sort-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 220px;
+  padding: 1rem;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: 20px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid white;
+  }
+}
+
+.sort-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.sort-option {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: rgba(0, 123, 255, 0.05);
+  }
+  
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #007bff;
+    cursor: pointer;
+  }
+  
+  span {
+    color: #495057;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+  }
+}
+
+.sort-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid #e9ecef;
+  
+  .btn {
+    flex: 1;
+    padding: 0.6rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &.btn-sm {
+      background: #007bff;
+      color: white;
+      border: none;
+      
+      &:hover {
+        background: #0056b3;
+        transform: translateY(-1px);
+      }
+    }
+    
+    &.btn-outline {
+      background: transparent;
+      color: #6c757d;
+      border: 1px solid #dee2e6;
+      
+      &:hover {
+        background: #f8f9fa;
+        border-color: #adb5bd;
+      }
+    }
+  }
+}

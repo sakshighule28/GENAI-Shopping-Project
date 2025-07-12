@@ -1,0 +1,277 @@
+@startuml Sequence Diagram
+!define PLANTUML_LIMIT_SIZE 8192
+skinparam backgroundColor #FFFFFF
+skinparam participant {
+    BackgroundColor #F8F8F8
+    BorderColor #000000
+    FontColor #000000
+    HeaderBackgroundColor #000000
+    HeaderFontColor #FFFFFF
+    FontSize 11
+}
+skinparam actor {
+    BackgroundColor #F0F0F0
+    BorderColor #000000
+    FontColor #000000
+}
+skinparam arrow {
+    Color #000000
+    FontColor #000000
+}
+skinparam note {
+    BackgroundColor #FAFAFA
+    BorderColor #000000
+    FontColor #000000
+}
+skinparam package {
+    BackgroundColor #FAFAFA
+    BorderColor #000000
+    FontColor #000000
+}
+
+title E-Commerce Application - User Authentication & Order Flow
+
+actor Customer as customer
+participant "Angular Frontend" as frontend
+participant "API Gateway" as gateway
+participant "Auth Controller" as authController
+participant "Product Controller" as productController
+participant "Cart Controller" as cartController
+participant "Order Controller" as orderController
+participant "User Service" as userService
+participant "Product Service" as productService
+participant "Cart Service" as cartService
+participant "Order Service" as orderService
+participant "Coupon Service" as couponService
+participant "MySQL Database" as database
+participant "Payment Gateway" as payment
+participant "SMS Service" as sms
+
+== User Authentication Flow ==
+
+customer -> frontend : Login Request
+activate frontend
+
+frontend -> gateway : POST /api/auth/login
+activate gateway
+
+gateway -> authController : Forward Request
+activate authController
+
+authController -> userService : authenticateUser(credentials)
+activate userService
+
+userService -> database : findByUsername()
+activate database
+database --> userService : User Details
+deactivate database
+
+userService -> userService : validatePassword()
+userService --> authController : User Object
+deactivate userService
+
+authController -> authController : generateJWT()
+authController --> gateway : JWT Token + User Info
+deactivate authController
+
+gateway --> frontend : Authentication Response
+deactivate gateway
+
+frontend --> customer : Login Success
+deactivate frontend
+
+== Product Browsing & Cart Management ==
+
+customer -> frontend : Browse Products
+activate frontend
+
+frontend -> gateway : GET /api/products
+activate gateway
+
+gateway -> productController : getProducts()
+activate productController
+
+productController -> productService : getAllProducts()
+activate productService
+
+productService -> database : findAll()
+activate database
+database --> productService : Product List
+deactivate database
+
+productService --> productController : Products
+deactivate productService
+
+productController --> gateway : Product Response
+deactivate productController
+
+gateway --> frontend : Products JSON
+deactivate gateway
+
+frontend --> customer : Display Products
+deactivate frontend
+
+customer -> frontend : Add to Cart
+activate frontend
+
+frontend -> gateway : POST /api/cart/add
+activate gateway
+
+gateway -> cartController : addToCart()
+activate cartController
+
+cartController -> cartService : addToCart(userId, productId, quantity)
+activate cartService
+
+cartService -> database : save(CartItem)
+activate database
+database --> cartService : Saved CartItem
+deactivate database
+
+cartService --> cartController : CartItem
+deactivate cartService
+
+cartController --> gateway : Success Response
+deactivate cartController
+
+gateway --> frontend : Cart Updated
+deactivate gateway
+
+frontend --> customer : Item Added to Cart
+deactivate frontend
+
+== Order Placement Flow ==
+
+customer -> frontend : Proceed to Checkout
+activate frontend
+
+frontend -> gateway : GET /api/cart/{userId}
+activate gateway
+
+gateway -> cartController : getCart()
+activate cartController
+
+cartController -> cartService : getCartByUser()
+activate cartService
+
+cartService -> database : findByUserId()
+activate database
+database --> cartService : Cart Items
+deactivate database
+
+cartService --> cartController : Cart Items
+deactivate cartService
+
+cartController --> gateway : Cart Response
+deactivate cartController
+
+gateway --> frontend : Cart Items
+deactivate gateway
+
+customer -> frontend : Apply Coupon (Optional)
+frontend -> gateway : GET /api/coupons/{code}
+activate gateway
+
+gateway -> productController : validateCoupon()
+activate productController
+
+productController -> couponService : validateCoupon()
+activate couponService
+
+couponService -> database : findByCode()
+activate database
+database --> couponService : Coupon Details
+deactivate database
+
+couponService --> productController : Valid Coupon
+deactivate couponService
+
+productController --> gateway : Coupon Response
+deactivate productController
+
+gateway --> frontend : Coupon Applied
+deactivate gateway
+
+customer -> frontend : Place Order
+frontend -> gateway : POST /api/orders
+activate gateway
+
+gateway -> orderController : createOrder()
+activate orderController
+
+orderController -> orderService : createOrder(orderData)
+activate orderService
+
+orderService -> database : save(Order)
+activate database
+database --> orderService : Saved Order
+deactivate database
+
+orderService -> cartService : clearCart(userId)
+activate cartService
+
+cartService -> database : deleteByUserId()
+activate database
+database --> cartService : Cart Cleared
+deactivate database
+deactivate cartService
+
+alt Payment Method: Online
+    orderService -> payment : initiatePayment()
+    activate payment
+    payment --> orderService : Payment URL
+    deactivate payment
+    
+    orderService -> sms : sendOTP()
+    activate sms
+    sms --> orderService : OTP Sent
+    deactivate sms
+end
+
+orderService --> orderController : Order Created
+deactivate orderService
+
+orderController --> gateway : Order Response
+deactivate orderController
+
+gateway --> frontend : Order Confirmation
+deactivate gateway
+
+frontend --> customer : Order Placed Successfully
+deactivate frontend
+
+== Order Status Update (Admin) ==
+
+actor Admin as admin
+admin -> frontend : Update Order Status
+activate frontend
+
+frontend -> gateway : PUT /api/orders/{id}/status
+activate gateway
+
+gateway -> orderController : updateOrderStatus()
+activate orderController
+
+orderController -> orderService : updateOrderStatus()
+activate orderService
+
+orderService -> database : update(Order)
+activate database
+database --> orderService : Updated Order
+deactivate database
+
+orderService --> orderController : Order Updated
+deactivate orderService
+
+orderController --> gateway : Success Response
+deactivate orderController
+
+gateway --> frontend : Status Updated
+deactivate gateway
+
+frontend --> admin : Order Status Changed
+deactivate frontend
+
+note over customer, database : "Complete e-commerce flow with\nauthentication, cart management,\nand order processing"
+
+@enduml

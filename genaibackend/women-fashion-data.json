@@ -1,0 +1,137 @@
+{
+  "categories": [
+    {
+      "name": "Ethnic Wear",
+      "description": "Traditional Indian wear including sarees, suits, lehengas"
+    },
+    {
+      "name": "Western Wear", 
+      "description": "Modern western clothing like dresses, tops, jeans"
+    },
+    {
+      "name": "Footwear",
+      "description": "Shoes, sandals, heels, flats for all occasions"
+    },
+    {
+      "name": "Accessories",
+      "description": "Jewelry, bags, scarves, and fashion accessories"
+    },
+    {
+      "name": "Lingerie & Sleepwear",
+      "description": "Intimate wear and comfortable sleepwear"
+    }
+  ],
+  "products": [
+    {
+      "name": "Banarasi Silk Saree",
+      "description": "Elegant handwoven Banarasi silk saree with golden zari work",
+      "price": 4999,
+      "stockQuantity": 25,
+      "imageUrl": "https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=800",
+      "size": "Free Size",
+      "color": "Royal Blue",
+      "brand": "Craftsvilla",
+      "categoryId": 1
+    },
+    {
+      "name": "Anarkali Suit Set",
+      "description": "Beautiful georgette Anarkali with dupatta and churidar",
+      "price": 2499,
+      "stockQuantity": 40,
+      "imageUrl": "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=800",
+      "size": "M",
+      "color": "Pink",
+      "brand": "Libas",
+      "categoryId": 1
+    },
+    {
+      "name": "Floral Maxi Dress",
+      "description": "Comfortable cotton maxi dress with floral print",
+      "price": 1299,
+      "stockQuantity": 60,
+      "imageUrl": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800",
+      "size": "L",
+      "color": "Multi",
+      "brand": "Zara",
+      "categoryId": 2
+    },
+    {
+      "name": "High Waist Jeans",
+      "description": "Stretchable denim high waist skinny jeans",
+      "price": 1899,
+      "stockQuantity": 80,
+      "imageUrl": "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=800",
+      "size": "32",
+      "color": "Dark Blue",
+      "brand": "Levi's",
+      "categoryId": 2
+    },
+    {
+      "name": "Block Heel Sandals",
+      "description": "Comfortable block heel sandals for office wear",
+      "price": 1599,
+      "stockQuantity": 35,
+      "imageUrl": "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800",
+      "size": "7",
+      "color": "Nude",
+      "brand": "Bata",
+      "categoryId": 3
+    },
+    {
+      "name": "Statement Earrings",
+      "description": "Oxidized silver statement earrings with stones",
+      "price": 599,
+      "stockQuantity": 100,
+      "imageUrl": "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800",
+      "size": "One Size",
+      "color": "Silver",
+      "brand": "Accessorize",
+      "categoryId": 4
+    },
+    {
+      "name": "Leather Handbag",
+      "description": "Genuine leather handbag with multiple compartments",
+      "price": 2999,
+      "stockQuantity": 20,
+      "imageUrl": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800",
+      "size": "Medium",
+      "color": "Brown",
+      "brand": "Hidesign",
+      "categoryId": 4
+    },
+    {
+      "name": "Cotton Nightsuit",
+      "description": "Soft cotton nightsuit with floral print",
+      "price": 899,
+      "stockQuantity": 50,
+      "imageUrl": "https://images.unsplash.com/photo-1571513722275-4b41940f54b8?w=800",
+      "size": "M",
+      "color": "Lavender",
+      "brand": "Jockey",
+      "categoryId": 5
+    }
+  ],
+  "statusReasons": {
+    "REQUEST_CANCEL": [
+      "Changed my mind",
+      "Found better price elsewhere", 
+      "Ordered by mistake",
+      "Financial constraints",
+      "Other"
+    ],
+    "REQUEST_EXCHANGE": [
+      "Wrong size delivered",
+      "Different color than expected",
+      "Want different variant",
+      "Quality not as expected",
+      "Other"
+    ],
+    "REQUEST_REPLACE": [
+      "Product damaged",
+      "Defective item",
+      "Missing parts/accessories",
+      "Wrong product delivered",
+      "Other"
+    ]
+  }
+}

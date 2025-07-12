@@ -1,0 +1,164 @@
+@startuml Class Diagram
+!define PLANTUML_LIMIT_SIZE 8192
+skinparam backgroundColor #FFFFFF
+skinparam class {
+    BackgroundColor #F8F8F8
+    BorderColor #000000
+    FontColor #000000
+    HeaderBackgroundColor #000000
+    HeaderFontColor #FFFFFF
+    FontSize 11
+}
+skinparam interface {
+    BackgroundColor #F0F0F0
+    BorderColor #000000
+    FontColor #000000
+}
+skinparam package {
+    BackgroundColor #FAFAFA
+    BorderColor #000000
+    FontColor #000000
+}
+skinparam arrow {
+    Color #000000
+    FontColor #000000
+}
+
+title E-Commerce Application - Backend Class Diagram
+
+package "Core Entities" {
+    class User {
+        -Long id
+        -String username
+        -String email
+        -Role role
+    }
+
+    class Product {
+        -Long id
+        -String name
+        -BigDecimal basePrice
+        -Integer unitsInStock
+        -Long categoryId
+    }
+
+    class Order {
+        -Long id
+        -String orderId
+        -Long userId
+        -BigDecimal totalAmount
+        -OrderStatus status
+    }
+
+    class CartItem {
+        -Long userId
+        -Long productId
+        -Integer quantity
+    }
+}
+
+package "Data Access" {
+    interface UserRepository {
+        +findByUsername(String)
+        +findByEmail(String)
+    }
+
+    interface ProductRepository {
+        +findByCategoryId(Long)
+        +searchByName(String)
+    }
+
+    interface OrderRepository {
+        +findByUserId(Long)
+        +findByOrderId(String)
+    }
+
+    interface CartRepository {
+        +findByUserId(Long)
+        +deleteByUserId(Long)
+    }
+}
+
+package "Business Logic" {
+    class UserService {
+        +registerUser()
+        +authenticateUser()
+        +findByUsername()
+    }
+
+    class ProductService {
+        +getAllProducts()
+        +createProduct()
+        +searchProducts()
+    }
+
+    class OrderService {
+        +createOrder()
+        +getOrdersByUser()
+        +updateOrderStatus()
+    }
+
+    class CartService {
+        +addToCart()
+        +getCartByUser()
+        +clearCart()
+    }
+}
+
+package "REST Controllers" {
+    class AuthController {
+        +register()
+        +login()
+        +logout()
+    }
+
+    class ProductController {
+        +getAllProducts()
+        +createProduct()
+        +searchProducts()
+    }
+
+    class OrderController {
+        +createOrder()
+        +getMyOrders()
+        +updateOrderStatus()
+    }
+
+    class CartController {
+        +addToCart()
+        +getCart()
+        +clearCart()
+    }
+}
+
+package "Security" {
+    class JwtUtil {
+        +generateToken()
+        +validateToken()
+    }
+
+    class SecurityConfig {
+        +passwordEncoder()
+        +filterChain()
+    }
+}
+
+' Relationships
+UserRepository --> UserService
+ProductRepository --> ProductService
+OrderRepository --> OrderService
+CartRepository --> CartService
+
+UserService --> AuthController
+ProductService --> ProductController
+OrderService --> OrderController
+CartService --> CartController
+
+JwtUtil --> AuthController
+SecurityConfig --> JwtUtil
+
+User ||--o{ CartItem
+User ||--o{ Order
+Product ||--o{ CartItem
+
+@enduml

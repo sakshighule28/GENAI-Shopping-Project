@@ -1,0 +1,142 @@
+{
+  "categories": [
+    {"name": "Sarees", "description": "Traditional Indian sarees in silk, cotton, georgette"},
+    {"name": "Dresses", "description": "Western dresses - maxi, mini, midi, party wear"},
+    {"name": "Tops", "description": "Casual tops, formal blouses, crop tops, shirts"},
+    {"name": "Bottoms", "description": "Jeans, trousers, skirts, shorts, palazzo"},
+    {"name": "Jewellery", "description": "Rings, earrings, pendants, necklaces, bracelets"},
+    {"name": "Footwear", "description": "Heels, flats, sandals, sneakers, boots"},
+    {"name": "Glasses", "description": "Sunglasses, reading glasses, fashion eyewear"},
+    {"name": "Bags", "description": "Handbags, clutches, backpacks, tote bags"},
+    {"name": "Caps", "description": "Baseball caps, beanies, sun hats, bucket hats"},
+    {"name": "Kurtas", "description": "Traditional kurtas and kurtis in cotton, silk"},
+    {"name": "Lehengas", "description": "Designer lehengas for weddings and festivals"},
+    {"name": "Suits", "description": "Salwar suits, palazzo suits, Anarkali suits"},
+    {"name": "Lingerie", "description": "Bras, panties, shapewear, camisoles"},
+    {"name": "Sleepwear", "description": "Nightsuits, pajamas, robes, sleep shirts"},
+    {"name": "Activewear", "description": "Gym wear, yoga clothes, sports bras, leggings"},
+    {"name": "Scarves", "description": "Silk scarves, cotton stoles, woolen wraps"},
+    {"name": "Belts", "description": "Leather belts, chain belts, fabric belts"},
+    {"name": "Watches", "description": "Fashion watches, smart watches, analog watches"},
+    {"name": "Hair Accessories", "description": "Hair bands, clips, scrunchies, headbands"},
+    {"name": "Makeup", "description": "Lipsticks, foundations, eye makeup, nail polish"}
+  ],
+  "products": [
+    {
+      "name": "Banarasi Silk Saree",
+      "description": "Handwoven Banarasi silk saree with intricate golden zari work and traditional motifs",
+      "basePrice": 8999,
+      "imageUrl": "https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=800",
+      "brand": "Mitera",
+      "categoryId": 1,
+      "variants": [
+        {"color": "Pink", "stockQuantity": 15, "price": 8999},
+        {"color": "Red", "stockQuantity": 12, "price": 9499},
+        {"color": "Navy Blue", "stockQuantity": 8, "price": 8999}
+      ]
+    },
+    {
+      "name": "Floral Maxi Dress",
+      "description": "Comfortable cotton maxi dress with beautiful floral print, perfect for summer",
+      "basePrice": 1899,
+      "imageUrl": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800",
+      "brand": "H&M",
+      "categoryId": 2,
+      "variants": [
+        {"size": "XS", "color": "Multi", "stockQuantity": 10, "price": 1899},
+        {"size": "S", "color": "Multi", "stockQuantity": 15, "price": 1899},
+        {"size": "M", "color": "Multi", "stockQuantity": 20, "price": 1899},
+        {"size": "L", "color": "Multi", "stockQuantity": 12, "price": 1899},
+        {"size": "XL", "color": "Multi", "stockQuantity": 8, "price": 1899}
+      ]
+    },
+    {
+      "name": "Crop Top",
+      "description": "Trendy crop top with tie-up detail at front, perfect for casual outings",
+      "basePrice": 799,
+      "imageUrl": "https://images.unsplash.com/photo-1571513722275-4b41940f54b8?w=800",
+      "brand": "Forever 21",
+      "categoryId": 3,
+      "variants": [
+        {"size": "XS", "color": "White", "stockQuantity": 15, "price": 799},
+        {"size": "S", "color": "White", "stockQuantity": 20, "price": 799},
+        {"size": "M", "color": "White", "stockQuantity": 25, "price": 799},
+        {"size": "L", "color": "White", "stockQuantity": 18, "price": 799},
+        {"size": "XS", "color": "Black", "stockQuantity": 12, "price": 799},
+        {"size": "S", "color": "Black", "stockQuantity": 18, "price": 799},
+        {"size": "M", "color": "Black", "stockQuantity": 22, "price": 799}
+      ]
+    },
+    {
+      "name": "High Waist Jeans",
+      "description": "Stretchable denim high waist skinny jeans with perfect fit and comfort",
+      "basePrice": 2499,
+      "imageUrl": "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=800",
+      "brand": "Levi's",
+      "categoryId": 4,
+      "variants": [
+        {"size": "28", "color": "Dark Blue", "stockQuantity": 12, "price": 2499},
+        {"size": "30", "color": "Dark Blue", "stockQuantity": 15, "price": 2499},
+        {"size": "32", "color": "Dark Blue", "stockQuantity": 18, "price": 2499},
+        {"size": "34", "color": "Dark Blue", "stockQuantity": 10, "price": 2499},
+        {"size": "28", "color": "Light Blue", "stockQuantity": 8, "price": 2699},
+        {"size": "30", "color": "Light Blue", "stockQuantity": 12, "price": 2699},
+        {"size": "32", "color": "Light Blue", "stockQuantity": 15, "price": 2699}
+      ]
+    },
+    {
+      "name": "Gold Plated Earrings",
+      "description": "Dainty gold plated drop earrings with delicate design, perfect for daily wear",
+      "basePrice": 899,
+      "imageUrl": "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800",
+      "brand": "Accessorize",
+      "categoryId": 5,
+      "variants": [
+        {"color": "Gold", "stockQuantity": 50, "price": 899},
+        {"color": "Rose Gold", "stockQuantity": 30, "price": 999}
+      ]
+    },
+    {
+      "name": "Block Heel Sandals",
+      "description": "Comfortable block heel sandals perfect for office wear and casual outings",
+      "basePrice": 1999,
+      "imageUrl": "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800",
+      "brand": "Charles & Keith",
+      "categoryId": 6,
+      "variants": [
+        {"size": "5", "color": "Tan", "stockQuantity": 8, "price": 1999},
+        {"size": "6", "color": "Tan", "stockQuantity": 12, "price": 1999},
+        {"size": "7", "color": "Tan", "stockQuantity": 15, "price": 1999},
+        {"size": "8", "color": "Tan", "stockQuantity": 10, "price": 1999},
+        {"size": "6", "color": "Black", "stockQuantity": 10, "price": 2199},
+        {"size": "7", "color": "Black", "stockQuantity": 12, "price": 2199}
+      ]
+    },
+    {
+      "name": "Cat Eye Sunglasses",
+      "description": "Trendy cat eye sunglasses with UV protection and stylish frame",
+      "basePrice": 1599,
+      "imageUrl": "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800",
+      "brand": "Ray-Ban",
+      "categoryId": 7,
+      "variants": [
+        {"color": "Black", "stockQuantity": 25, "price": 1599},
+        {"color": "Brown", "stockQuantity": 20, "price": 1699},
+        {"color": "Pink", "stockQuantity": 15, "price": 1799}
+      ]
+    },
+    {
+      "name": "Leather Handbag",
+      "description": "Genuine leather handbag with multiple compartments and elegant design",
+      "basePrice": 4999,
+      "imageUrl": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800",
+      "brand": "Michael Kors",
+      "categoryId": 8,
+      "variants": [
+        {"color": "Brown", "stockQuantity": 12, "price": 4999},
+        {"color": "Black", "stockQuantity": 15, "price": 5299},
+        {"color": "Tan", "stockQuantity": 8, "price": 4999}
+      ]
+    }
+  ]
+}

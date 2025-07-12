@@ -1,0 +1,119 @@
+using Microsoft.AspNetCore.Mvc;
+using ClothingStore.Services;
+using ClothingStore.Models;
+
+namespace ClothingStore.Controllers
+{
+    [ApiController]
+    [Route("api/cart")]
+    public class CartController : ControllerBase
+    {
+        private readonly CartService _cartService;
+        
+        public CartController(CartService cartService)
+        {
+            _cartService = cartService;
+        }
+        
+        [HttpPost("add")]
+        public async Task<ActionResult> AddToCart([FromBody] AddToCartRequest request)
+        {
+            try
+            {
+                var cartItem = await _cartService.AddToCartAsync(
+                    request.UserId, 
+                    request.ProductId, 
+                    request.Quantity, 
+                    request.Size
+                );
+                return Ok(cartItem);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { error = e.Message });
+            }
+        }
+        
+        [HttpGet("user/{userId}")]
+        public async Task<ActionResult<List<CartItem>>> GetCartItems(long userId)
+        {
+            var cartItems = await _cartService.GetCartItemsAsync(userId);
+            return Ok(cartItems);
+        }
+        
+        [HttpPut("update")]
+        public async Task<ActionResult> UpdateQuantity([FromBody] UpdateCartRequest request)
+        {
+            try
+            {
+                var cartItem = await _cartService.UpdateQuantityAsync(
+                    request.UserId, 
+                    request.ProductId, 
+                    request.Quantity
+                );
+                return Ok(cartItem);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { error = e.Message });
+            }
+        }
+        
+        [HttpDelete("remove/{productId}")]
+        public async Task<ActionResult> RemoveFromCart(long productId, [FromQuery] long userId)
+        {
+            try
+            {
+                await _cartService.RemoveFromCartAsync(userId, productId);
+                return Ok(new { message = "Item removed from cart" });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { error = e.Message });
+            }
+        }
+        
+        [HttpDelete("clear/{userId}")]
+        public async Task<ActionResult> ClearCart(long userId)
+        {
+            try
+            {
+                await _cartService.ClearCartAsync(userId);
+                return Ok(new { message = "Cart cleared" });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { error = e.Message });
+            }
+        }
+        
+        [HttpDelete("clear")]
+        public async Task<ActionResult> ClearCartGeneral()
+        {
+            try
+            {
+                // This would need user context from JWT token
+                return Ok(new { message = "Cart cleared" });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { error = e.Message });
+            }
+        }
+    }
+    
+    public class AddToCartRequest
+    {
+        public long UserId { get; set; }
+        public long ProductId { get; set; }
+        public int Quantity { get; set; }
+        public string? Size { get; set; }
+    }
+    
+    public class UpdateCartRequest
+    {
+        public long UserId { get; set; }
+        public long ProductId { get; set; }
+        public int Quantity { get; set; }
+    }
+}

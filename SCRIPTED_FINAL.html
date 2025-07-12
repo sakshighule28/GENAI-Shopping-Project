@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCRIPTED - The Real AI Development Story</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --accent-primary: #00ff88;
+            --accent-secondary: #ff0080;
+            --accent-tertiary: #0080ff;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666666;
+            --border-color: #333333;
+            --error-color: #ff4444;
+            --warning-color: #ffaa00;
+            --success-color: #00ff88;
+            --code-bg: #0d1117;
+            --code-border: #30363d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-secondary);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 1rem 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(10, 10, 10, 0.98);
+            box-shadow: 0 4px 20px rgba(0, 255, 136, 0.1);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent-primary);
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .nav-links a::before {
+            content: '> ';
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-links a:hover::before {
+            opacity: 1;
+            color: var(--accent-primary);
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-primary);
+            text-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 128, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 128, 255, 0.1) 0%, transparent 50%);
+        }
+
+        .hero-content {
+            max-width: 1000px;
+            text-align: center;
+            z-index: 2;
+            animation: heroGlow 2s ease-out;
+        }
+
+        @keyframes heroGlow {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+                filter: blur(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0);
+            }
+        }
+
+        .hero h1 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(3rem, 8vw, 7rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+        }
+
+        .hero .subtitle {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            font-weight: 300;
+            margin-bottom: 2rem;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .hero .description {
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            border: none;
+            border-radius: 8px;
+            color: var(--bg-primary);
+            text-decoration: none;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 255, 136, 0.5);
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 8rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-tertiary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Reality Check Cards */
+        .reality-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .reality-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .reality-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+        }
+
+        .reality-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 10px 40px rgba(0, 255, 136, 0.1);
+        }
+
+        .reality-card h3 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--accent-primary);
+        }
+
+        .reality-card .metric {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: attr(data-lang);
+            position: absolute;
+            top: 0.5rem;
+            right: 1rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Loading */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Comparison Styles */
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 3rem;
+            margin: 4rem 0;
+            align-items: start;
+        }
+
+        .tool-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .tool-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tool-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .copilot-logo {
+            background: #0969da;
+            color: white;
+        }
+
+        .amazonq-logo {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+        }
+
+        .vs-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent-secondary);
+            text-shadow: 0 0 10px rgba(255, 0, 128, 0.5);
+        }
+
+        .experience-list {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .experience-list li {
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .experience-list li:last-child {
+            border-bottom: none;
+        }
+
+        .pro::before {
+            content: '✓';
+            color: var(--success-color);
+            font-weight: bold;
+        }
+
+        .con::before {
+            content: '✗';
+            color: var(--error-color);
+            font-weight: bold;
+        }
+
+        .neutral::before {
+            content: '~';
+            color: var(--warning-color);
+            font-weight: bold;
+        }
+
+        .verdict {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 4rem;
+            text-align: center;
+        }
+
+        .verdict h3 {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-primary);
+            margin-bottom: 1rem;
+        }
+
+        /* Timeline Styles */
+        .timeline {
+            position: relative;
+            margin: 4rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--accent-primary), var(--accent-secondary));
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin: 3rem 0;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 2rem;
+            width: 45%;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-content:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 10px 40px rgba(0, 255, 136, 0.1);
+        }
+
+        .timeline-content h3 {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-content h4 {
+            color: var(--accent-secondary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .timeline-content ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .timeline-content li {
+            padding: 0.3rem 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .timeline-content li::before {
+            content: '▸';
+            color: var(--accent-tertiary);
+            font-weight: bold;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content::before {
+            content: '';
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 10px solid transparent;
+            border-left-color: var(--bg-secondary);
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 10px solid transparent;
+            border-right-color: var(--bg-secondary);
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 50%;
+            border: 4px solid var(--bg-primary);
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+
+        /* Slide animations */
+        .slide-in-left {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.8s ease;
+        }
+
+        .slide-in-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide-in-right {
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.8s ease;
+        }
+
+        .slide-in-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .section {
+                padding: 4rem 1rem;
+            }
+
+            .reality-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .vs-divider {
+                order: -1;
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-item {
+                flex-direction: column;
+                align-items: flex-start;
+                padding-left: 3rem;
+            }
+
+            .timeline-content {
+                width: 100%;
+            }
+
+            .timeline-dot {
+                left: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-content">
+            <div class="logo">SCRIPTED.dev</div>
+            <ul class="nav-links">
+                <li><a href="#hero">home</a></li>
+                <li><a href="#reality">metrics</a></li>
+                <li><a href="#journey">journey</a></li>
+                <li><a href="#prompts">prompts</a></li>
+                <li><a href="#comparison">ai_tools</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <h1>SCRIPTED</h1>
+            <p class="subtitle">// The Real AI Development Story</p>
+            <p class="description">
+                A comprehensive analysis of AI-assisted full-stack development. 
+                Real metrics, proven methodologies, and actionable insights from a complete e-commerce implementation.
+            </p>
+            <a href="#reality" class="cta-button">
+                <i class="fas fa-terminal"></i>
+                ./explore_metrics.sh
+            </a>
+        </div>
+    </section>
+
+    <!-- Reality Check Section -->
+    <section class="section" id="reality">
+        <div class="section-header fade-in">
+            <h2 class="section-title">// Project Metrics</h2>
+            <p class="section-subtitle">
+                Quantified results from AI-assisted development implementation
+            </p>
+        </div>
+
+        <div class="reality-grid">
+            <div class="reality-card fade-in">
+                <h3>Development Time</h3>
+                <div class="metric">6 days</div>
+                <p>4 days initial build + 2 days migration. Comprehensive full-stack implementation with production-ready features and testing.</p>
+            </div>
+
+            <div class="reality-card fade-in">
+                <h3>AI Assistance Level</h3>
+                <div class="metric">~85%</div>
+                <p>Extensive AI collaboration for code generation, debugging, and architecture guidance while maintaining human oversight for critical decisions.</p>
+            </div>
+
+            <div class="reality-card fade-in">
+                <h3>Prompts Used</h3>
+                <div class="metric">200+</div>
+                <p>Iterative development process with strategic prompt engineering. Effective prompts required specificity and context for optimal results.</p>
+            </div>
+
+            <div class="reality-card fade-in">
+                <h3>Manual Fixes</h3>
+                <div class="metric">~30</div>
+                <p>Manual interventions for edge cases and complex integrations. Human expertise remains essential for validation and optimization.</p>
+            </div>
+
+            <div class="reality-card fade-in">
+                <h3>Stack Overflow Visits</h3>
+                <div class="metric">12</div>
+                <p>External research for specialized configurations and best practices. AI complements but doesn't replace comprehensive technical knowledge.</p>
+            </div>
+
+            <div class="reality-card fade-in">
+                <h3>Coffee Consumed</h3>
+                <div class="metric">∞</div>
+                <p>Development fundamentals remain constant. AI accelerates implementation but requires sustained focus and problem-solving commitment.</p>
+            </div>
+        </div>
+
+        <div class="code-block" data-lang="development.log">
+// Development progression timeline
+Day 1-2: Foundation setup - Authentication, database design, core architecture
+Day 3-4: Feature implementation - Cart system, orders, coupons, wishlist
+Day 5-6: Technology migration - Angular→React, Spring Boot→.NET
+Result: Production-ready e-commerce platform with 100% test coverage
+        </div>
+    </section>
+
+    <!-- Development Journey Section -->
+    <section class="section" id="journey">
+        <div class="section-header fade-in">
+            <h2 class="section-title">// Development Journey</h2>
+            <p class="section-subtitle">
+                6-day sprint powered by AI-assisted development methodology
+            </p>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-item slide-in-left">
+                <div class="timeline-content">
+                    <h3>Day 1-2: Foundation</h3>
+                    <h4>🏗️ Architecture & Authentication</h4>
+                    <ul>
+                        <li>Spring Boot project setup with security configuration</li>
+                        <li>MySQL database design with 12+ tables</li>
+                        <li>JWT authentication implementation</li>
+                        <li>User management and role-based access</li>
+                        <li>Angular project initialization with routing</li>
+                    </ul>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+
+            <div class="timeline-item slide-in-right">
+                <div class="timeline-content">
+                    <h3>Day 3-4: Core Features</h3>
+                    <h4>🛒 Shopping & Orders</h4>
+                    <ul>
+                        <li>Product catalog with categories and filtering</li>
+                        <li>Smart shopping cart implementation</li>
+                        <li>Order processing system with status tracking</li>
+                        <li>Location services with state/city management</li>
+                        <li>Frontend components with reactive forms</li>
+                    </ul>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+
+            <div class="timeline-item slide-in-left">
+                <div class="timeline-content">
+                    <h3>Day 5-6: Migration</h3>
+                    <h4>🔄 React & .NET Migration</h4>
+                    <ul>
+                        <li>Angular to React component migration</li>
+                        <li>Spring Boot to .NET Core conversion</li>
+                        <li>Database model adaptation</li>
+                        <li>API endpoint restructuring</li>
+                        <li>Modern React hooks implementation</li>
+                        <li>Celebration animations and success modals</li>
+                    </ul>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Effective Prompts Section -->
+    <section class="section" id="prompts">
+        <div class="section-header fade-in">
+            <h2 class="section-title">// Effective Prompt Engineering</h2>
+            <p class="section-subtitle">
+                Key strategies and patterns that maximized AI development efficiency
+            </p>
+        </div>
+
+        <div class="reality-grid">
+            <div class="reality-card fade-in">
+                <h3>Specificity Principle</h3>
+                <div class="code-block" data-lang="prompt">
+"Create a Spring Boot e-commerce application with JWT authentication, 
+product management, and shopping cart functionality"
+                </div>
+                <p>Detailed requirements with specific technologies and features produced comprehensive, production-ready code structures.</p>
+            </div>
+
+            <div class="reality-card fade-in">
+                <h3>Context-Rich Requests</h3>
+                <div class="code-block" data-lang="prompt">
+"Add shopping cart functionality with real-time updates, size selection 
+validation, and persistent storage across sessions"
+                </div>
+                <p>Including business logic and user experience requirements resulted in complete feature implementations.</p>
+            </div>
+
+            <div class="reality-card fade-in">
+                <h3>Migration Strategy</h3>
+                <div class="code-block" data-lang="prompt">
+"Migrate Angular components to React functional components with hooks, 
+preserving all functionality and improving performance"
+                </div>
+                <p>Clear migration objectives with technology preferences enabled seamless platform transitions.</p>
+            </div>
+
+            <div class="reality-card fade-in">
+                <h3>Quality Assurance Focus</h3>
+                <div class="code-block" data-lang="prompt">
+"Create comprehensive test suite for all backend services with 
+JUnit 5 and Mockito, covering edge cases"
+                </div>
+                <p>Emphasizing testing requirements produced robust test coverage and reliable code quality.</p>
+            </div>
+        </div>
+
+        <div class="verdict fade-in">
+            <h3>// Prompt Engineering Best Practices</h3>
+            <div class="reality-grid" style="margin-top: 2rem;">
+                <div class="reality-card">
+                    <h3>Be Specific</h3>
+                    <p>Include exact technologies, versions, and architectural patterns. Vague requests produce generic solutions.</p>
+                </div>
+                <div class="reality-card">
+                    <h3>Provide Context</h3>
+                    <p>Explain the business logic, user experience goals, and integration requirements for comprehensive solutions.</p>
+                </div>
+                <div class="reality-card">
+                    <h3>Iterate Strategically</h3>
+                    <p>Build on previous responses with refinements rather than starting over. Maintain conversation context.</p>
+                </div>
+                <div class="reality-card">
+                    <h3>Request Testing</h3>
+                    <p>Always include testing requirements in prompts. AI excels at generating comprehensive test suites.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Comparison Section -->
+    <section class="section" id="comparison">
+        <div class="section-header fade-in">
+            <h2 class="section-title">// AI Development Tools Analysis</h2>
+            <p class="section-subtitle">
+                Comparative evaluation based on production development experience
+            </p>
+        </div>
+
+        <div class="comparison-container">
+            <div class="tool-card copilot fade-in">
+                <div class="tool-header">
+                    <div class="tool-logo copilot-logo">
+                        <i class="fab fa-github"></i>
+                    </div>
+                    <div>
+                        <h3>GitHub Copilot</h3>
+                        <p>The OG AI pair programmer</p>
+                    </div>
+                </div>
+
+                <ul class="experience-list">
+                    <li class="pro">Efficient code completion and snippets</li>
+                    <li class="pro">Strong pattern recognition for repetitive tasks</li>
+                    <li class="pro">Seamless IDE integration</li>
+                    <li class="pro">Contextual awareness within individual files</li>
+                    <li class="neutral">Requires clear development direction</li>
+                    <li class="con">Limited conversational capabilities</li>
+                    <li class="con">Minimal architectural guidance</li>
+                    <li class="con">Challenges with multi-file coordination</li>
+                    <li class="con">Lacks project-wide context understanding</li>
+                    <li class="con">Limited explanation of code rationale</li>
+                </ul>
+
+                <div class="code-block" data-lang="experience">
+// Typical Copilot workflow
+function createOrder() {
+  // Provides code completion
+  // Limited to current file context
+  // Requires manual debugging
+}
+                </div>
+            </div>
+
+            <div class="vs-divider">VS</div>
+
+            <div class="tool-card amazonq fade-in">
+                <div class="tool-header">
+                    <div class="tool-logo amazonq-logo">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div>
+                        <h3>Amazon Q</h3>
+                        <p>The conversational AI developer</p>
+                    </div>
+                </div>
+
+                <ul class="experience-list">
+                    <li class="pro">Advanced conversational development interface</li>
+                    <li class="pro">Comprehensive project structure understanding</li>
+                    <li class="pro">Strategic architecture and design guidance</li>
+                    <li class="pro">Multi-file coordination and updates</li>
+                    <li class="pro">Detailed reasoning and explanation capabilities</li>
+                    <li class="pro">Proactive debugging and error resolution</li>
+                    <li class="neutral">Security-focused permission requests</li>
+                    <li class="con">Detailed responses may require filtering</li>
+                    <li class="con">Occasional legacy pattern suggestions</li>
+                    <li class="con">Variable response latency</li>
+                </ul>
+
+                <div class="code-block" data-lang="experience">
+// Typical Amazon Q workflow
+"Implement cart functionality with validation"
+> Analyzes project architecture
+> Generates complete feature implementation
+> Updates related components and services
+> Provides comprehensive testing
+> Explains implementation decisions
+                </div>
+            </div>
+        </div>
+
+        <div class="verdict fade-in">
+            <h3>// Professional Assessment</h3>
+            <p>
+                <strong>For comprehensive application development:</strong> Amazon Q demonstrated superior 
+                capabilities in project-wide understanding, architectural guidance, and collaborative 
+                development. While GitHub Copilot excels at code completion, Amazon Q provides the 
+                strategic thinking and contextual awareness required for complex, multi-component applications.
+            </p>
+        </div>
+    </section>
+
+    <script>
+        // Loading Screen
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('hidden');
+            }, 1000);
+        });
+
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Scroll Animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

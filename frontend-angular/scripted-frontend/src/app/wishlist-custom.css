@@ -1,0 +1,21 @@
+.wishlist-section .products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.wishlist-section .product-card {
+  max-width: 220px;
+  margin: 0 auto;
+}
+
+.wishlist-section .product-image {
+  height: 200px;
+}
+
+.wishlist-section .product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

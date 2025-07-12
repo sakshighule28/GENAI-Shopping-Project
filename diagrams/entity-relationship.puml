@@ -1,0 +1,186 @@
+@startuml Entity Relationship Diagram
+!define PLANTUML_LIMIT_SIZE 8192
+skinparam backgroundColor #FFFFFF
+skinparam entity {
+    BackgroundColor #F8F8F8
+    BorderColor #000000
+    FontColor #000000
+    HeaderBackgroundColor #000000
+    HeaderFontColor #FFFFFF
+    FontSize 11
+}
+skinparam relationship {
+    BackgroundColor #FFFFFF
+    BorderColor #000000
+    FontColor #000000
+}
+skinparam note {
+    BackgroundColor #FAFAFA
+    BorderColor #000000
+    FontColor #000000
+}
+skinparam arrow {
+    Color #000000
+    FontColor #000000
+}
+skinparam package {
+    BackgroundColor #FAFAFA
+    BorderColor #000000
+    FontColor #000000
+}
+
+title E-Commerce Application - Entity Relationship Diagram
+
+entity "users" as users {
+    * id : BIGINT <<PK>>
+    --
+    * username : VARCHAR(50) <<UK>>
+    * email : VARCHAR(100) <<UK>>
+    * password : VARCHAR(255)
+    * role : ENUM('ADMIN', 'CUSTOMER')
+    created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "categories" as categories {
+    * id : BIGINT <<PK>>
+    --
+    * name : VARCHAR(100) <<UK>>
+    description : TEXT
+    created_at : TIMESTAMP
+}
+
+entity "products" as products {
+    * id : BIGINT <<PK>>
+    --
+    * name : VARCHAR(255)
+    * description : TEXT
+    * base_price : DECIMAL(10,2)
+    discounted_price : DECIMAL(10,2)
+    discount_percent : DECIMAL(5,2)
+    * units_in_stock : INT
+    brand : VARCHAR(100)
+    sizes : VARCHAR(255)
+    image_url : VARCHAR(500)
+    * category_id : BIGINT <<FK>>
+    created_date : TIMESTAMP
+    popularity_score : INT
+}
+
+entity "cart_items" as cart_items {
+    * id : BIGINT <<PK>>
+    --
+    * user_id : BIGINT <<FK>>
+    * product_id : BIGINT <<FK>>
+    * quantity : INT
+    size : VARCHAR(10)
+    created_at : TIMESTAMP
+}
+
+entity "orders" as orders {
+    * id : BIGINT <<PK>>
+    --
+    * order_id : VARCHAR(20) <<UK>>
+    * user_id : BIGINT <<FK>>
+    * total_amount : DECIMAL(10,2)
+    discount_amount : DECIMAL(10,2)
+    * status : ENUM('PLACED', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED')
+    payment_method : ENUM('ONLINE', 'COD')
+    payment_status : ENUM('PENDING', 'COMPLETED', 'FAILED')
+    shipping_address : TEXT
+    city : VARCHAR(100)
+    state : VARCHAR(100)
+    pincode : VARCHAR(10)
+    phone : VARCHAR(15)
+    coupon_code : VARCHAR(20)
+    * created_at : TIMESTAMP
+    updated_at : TIMESTAMP
+}
+
+entity "order_items" as order_items {
+    * id : BIGINT <<PK>>
+    --
+    * order_id : BIGINT <<FK>>
+    * product_id : BIGINT <<FK>>
+    * quantity : INT
+    * price : DECIMAL(10,2)
+    size : VARCHAR(10)
+}
+
+entity "coupons" as coupons {
+    * id : BIGINT <<PK>>
+    --
+    * code : VARCHAR(20) <<UK>>
+    * discount_percent : DECIMAL(5,2)
+    * status : ENUM('ACTIVE', 'EXPIRED', 'DISABLED')
+    expiry_date : DATE
+    created_at : TIMESTAMP
+}
+
+entity "coupon_usage" as coupon_usage {
+    * id : BIGINT <<PK>>
+    --
+    * coupon_id : BIGINT <<FK>>
+    * user_id : BIGINT <<FK>>
+    * order_id : BIGINT <<FK>>
+    used_at : TIMESTAMP
+}
+
+entity "wishlists" as wishlists {
+    * id : BIGINT <<PK>>
+    --
+    * user_id : BIGINT <<FK>>
+    * product_id : BIGINT <<FK>>
+    created_at : TIMESTAMP
+}
+
+entity "reviews" as reviews {
+    * id : BIGINT <<PK>>
+    --
+    * product_id : BIGINT <<FK>>
+    * user_id : BIGINT <<FK>>
+    * rating : INT
+    comment : TEXT
+    created_at : TIMESTAMP
+}
+
+entity "states" as states {
+    * id : BIGINT <<PK>>
+    --
+    * name : VARCHAR(100) <<UK>>
+}
+
+entity "cities" as cities {
+    * id : BIGINT <<PK>>
+    --
+    * name : VARCHAR(100)
+    * state_id : BIGINT <<FK>>
+}
+
+' Relationships
+users ||--o{ cart_items : "has"
+users ||--o{ orders : "places"
+users ||--o{ wishlists : "maintains"
+users ||--o{ reviews : "writes"
+users ||--o{ coupon_usage : "uses"
+
+categories ||--o{ products : "contains"
+
+products ||--o{ cart_items : "added to"
+products ||--o{ order_items : "ordered as"
+products ||--o{ wishlists : "wished for"
+products ||--o{ reviews : "reviewed"
+
+orders ||--o{ order_items : "contains"
+orders ||--o{ coupon_usage : "applies"
+
+coupons ||--o{ coupon_usage : "tracked by"
+
+states ||--o{ cities : "contains"
+
+note top of users : "Stores user authentication\nand profile information"
+note top of products : "Main product catalog\nwith pricing and inventory"
+note top of orders : "Complete order information\nwith status tracking"
+note top of coupons : "Discount coupon system\nwith usage validation"
+
+@enduml
